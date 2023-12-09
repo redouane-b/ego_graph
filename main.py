@@ -1,28 +1,40 @@
-import sys
+from flask import Flask, render_template, request
 from datetime import datetime
-from utils import *
+from utils import fetch_suggestions, extract_terms_after_vs, build_dataframe, generate_node_df, generate_edges_df
+import pandas as pd
 
-if __name__ == "__main__":
-    # Check if the correct number of command line arguments is provided
-    if len(sys.argv) != 6:
-        print("Usage: python main.py country language search_term max_depth num_suggestions")
-        sys.exit(1)
+app = Flask(__name__)
 
-    country = sys.argv[1]
-    language = sys.argv[2]
-    search_term = sys.argv[3]
-    max_depth = int(sys.argv[4])
-    num_suggestions = int(sys.argv[5])
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-    suggestions = fetch_suggestions(country, language, search_term, num_suggestions=num_suggestions)
-    accepted_terms = extract_terms_after_vs(suggestions, search_term, [])
+@app.route('/process', methods=['GET', 'POST'])
+def process():
+    if request.method == 'POST':
+        country = request.form['country']
+        language = request.form['language']
+        search_term = request.form['search_term']
+        max_depth = int(request.form['max_depth'])
+        num_suggestions = int(request.form['num_suggestions'])
 
-    result_dataframe = build_dataframe(country, language, search_term, accepted_terms, num_suggestions=num_suggestions, depth=max_depth)
+        suggestions = fetch_suggestions(country, language, search_term, num_suggestions=num_suggestions)
+        accepted_terms = extract_terms_after_vs(suggestions, search_term, [])
 
-    nodes = generate_node_df(result_dataframe)
-    edges = generate_edges_df(result_dataframe)
+        result_dataframe = build_dataframe(country, language, search_term, accepted_terms, num_suggestions=num_suggestions, depth=max_depth)
 
-    # Save dataframes with the current date in the filename
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    nodes.to_csv(f'points_{current_date}.csv', index=False)
-    edges.to_csv(f'links_{current_date}.csv', index=False)
+        nodes = generate_node_df(result_dataframe)
+        edges = generate_edges_df(result_dataframe)
+
+        # Save dataframes with the current date in the filename
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        nodes.to_csv(f'static/points_{current_date}.csv', index=False)
+        edges.to_csv(f'static/links_{current_date}.csv', index=False)
+
+        return render_template('result.html', nodes=f'points_{current_date}.csv', edges=f'links_{current_date}.csv')
+
+    # Render the main page for GET requests
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)

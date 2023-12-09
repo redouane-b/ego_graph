@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graph Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Ego Graph Generator</title>
 </head>
 <body>
-    <h1>Graph Generator</h1>
+    <h1>Ego Graph Generator</h1>
     <form action="/process" method="post">
         <label for="country">Country:</label>
         <input type="text" name="country" required><br>
