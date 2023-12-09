@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Generator</title>
+</head>
+<body>
+    <h1>Graph Generator</h1>
+    <form action="/process" method="post">
+        <label for="country">Country:</label>
+        <input type="text" name="country" required><br>
+        <label for="language">Language:</label>
+        <input type="text" name="language" required><br>
+        <label for="search_term">Search Term:</label>
+        <input type="text" name="search_term" required><br>
+        <label for="max_depth">Max Depth:</label>
+        <input type="number" name="max_depth" required><br>
+        <label for="num_suggestions">Number of Suggestions:</label>
+        <input type="number" name="num_suggestions" required><br>
+        <button type="submit">Generate Graph</button>
+    </form>
+</body>
+</html>
